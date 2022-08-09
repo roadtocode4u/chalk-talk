@@ -1,0 +1,54 @@
+.background{
+    background-color: #f4f7fa;
+    padding: 15px;
+}
+.paragraph_text{
+    font-size: 27px;
+}
+.heading_h1{
+    color: brown;
+}
+.card_title{
+    font-size: 27px;
+    color: brown;
+}
+.img-fluid{
+    height: 250px;
+    width: 350px;
+    margin-left: 250px;
+}
+.join_button{
+    background-color: rgb(234, 224, 206);
+    color: brown;
+    font-size: larger;
+    border-radius: 10px;
+    height: 40px;
+    border: 2px solid rgb(236, 212, 166);
+}
+.span_green{
+    color: green;
+}
+.span_blue{
+    color: blue;
+}
+.span_red{
+    color: red;
+}
+.icons_logos{
+    color: brown;
+}
+.card_shadow{
+    box-shadow: 5px 0px 5px 0px rgba(0,0,0,0.75);
+}
+.padd_class{
+    padding: 10px;
+}
+.heckbox_input{
+
+}
+.checkbox_input_box{
+    
+}
+.checkbox_input{
+    font-size: 25px;
+}
