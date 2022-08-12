@@ -1,0 +1,13 @@
+.background{
+    background-color: #f4f7fa;
+    padding: 15px;
+}
+.paragraph-text{
+    font-size: 22px;
+}
+.header-display-img{
+    max-height: 200px;
+}
+.checkbox-input{
+    font-size: 20px;
+}
