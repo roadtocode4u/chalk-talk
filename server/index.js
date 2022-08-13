@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose')
 const User = require('./models/User')
+const Doubt = require('./models/Doubt');
+const TeachingAssistant = require('./models/TeachingAssistant');
+const MeetingSlot = require("./models/MeetingSlot")
 
 const app = express();
 app.use(bodyParser.json());
@@ -80,6 +83,48 @@ app.post('/register', async (req, res) => {
   const savedUser = await newUser.save();
 
   res.send(savedUser);
+})
+
+app.post("/doubt", async(req, res) =>{
+  const {title, description, courseName,status,user} = req.body
+
+  const newDoubt = new Doubt({
+    title,
+    description,
+    courseName,
+    status,
+    user
+  })
+
+  const savedDoubt = await newDoubt.save();
+  res.send(savedDoubt);
+})
+
+app.post("/assistant", async(req, res) =>{
+  const {fullName, email, mobile, password} = req.body
+
+  const newTeachingAssistant = new TeachingAssistant({
+    fullName,
+    email,
+    mobile,
+    password
+  })
+
+  const savedTeachingAssistant = await newTeachingAssistant.save();
+  res.send(savedTeachingAssistant);
+})
+
+app.post("/meetingslot", async(req, res) =>{
+  const {slotTime, teachingAssistant, doubt} = req.body
+
+  const newMeetingSlot = new MeetingSlot({
+    slotTime,
+    teachingAssistant,
+    doubt
+  })
+
+  const savedMeetingSlot = await newMeetingSlot.save();
+  res.send(savedMeetingSlot);
 })
 
 if (process.env.NODE_ENV === 'production') {
