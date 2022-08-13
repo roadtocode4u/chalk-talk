@@ -6,7 +6,8 @@ const mongoose = require('mongoose')
 const User = require('./models/User')
 const Doubt = require('./models/Doubt');
 const TeachingAssistant = require('./models/TeachingAssistant');
-const MeetingSlot = require("./models/MeetingSlot")
+const MeetingSlot = require("./models/MeetingSlot");
+const { default: axios } = require('axios');
 
 const app = express();
 app.use(bodyParser.json());
@@ -24,26 +25,23 @@ app.get('/health', (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-  const {fullName, email, mobile} = req.body
-  
-  if(!fullName)
-  {
+  const { fullName, email, mobile } = req.body
+
+  if (!fullName) {
     return res.send({
       success: false,
       message: 'fullName cannot be empty'
     })
   }
 
-  if(!email)
-  {
+  if (!email) {
     return res.send({
       success: false,
       message: 'email cannot be empty'
     })
   }
 
-  if(!mobile)
-  {
+  if (!mobile) {
     return res.send({
       success: false,
       message: 'mobile cannot be empty'
@@ -53,17 +51,17 @@ app.post('/register', async (req, res) => {
   const user = await User.findOne({
     email: email,
   })
-  
-  if(user){
+
+  if (user) {
     await User.updateOne({
       email: email,
     },
-    {
-      $set: {
-        fullName: fullName,
-        mobile: mobile,
-      }
-    })
+      {
+        $set: {
+          fullName: fullName,
+          mobile: mobile,
+        }
+      })
 
     const updatedUser = await User.findOne({
       email: email,
@@ -79,14 +77,14 @@ app.post('/register', async (req, res) => {
     mobile: mobile
 
   })
-  
+
   const savedUser = await newUser.save();
 
   res.send(savedUser);
 })
 
-app.post("/doubt", async(req, res) =>{
-  const {title, description, courseName,status,user} = req.body
+app.post("/doubt", async (req, res) => {
+  const { title, description, courseName, status, user } = req.body
 
   const newDoubt = new Doubt({
     title,
@@ -95,13 +93,30 @@ app.post("/doubt", async(req, res) =>{
     status,
     user
   })
+  // TODO: send notification to slack channel
+  const teachingAssistantName = "Vaibhavi"
+  const studentName = "Suraj"
+  const studentMobileNo = "7821011979"
+  const slotTime = "8pm to 9pm"
+
+  const response = await axios.post("https://slack.com/api/chat.postMessage", {
+    "channel": "C03N225P5FX",
+    "text": `Hello *${teachingAssistantName}*, New doubt is assigned to you.
+*${studentName}* has asked *${title}*. Doubt Session with him is scheduled at *${slotTime}*. 
+please call him now to inform about this session *${studentMobileNo}*.
+More details are avilable in your dashboard. `
+  }, {
+    headers: {
+      authorization: `Bearer ${process.env.AUTH_TOKEN}`
+    }
+  })
 
   const savedDoubt = await newDoubt.save();
   res.send(savedDoubt);
 })
 
-app.post("/assistant", async(req, res) =>{
-  const {fullName, email, mobile, password} = req.body
+app.post("/assistant", async (req, res) => {
+  const { fullName, email, mobile, password } = req.body
 
   const newTeachingAssistant = new TeachingAssistant({
     fullName,
@@ -114,8 +129,8 @@ app.post("/assistant", async(req, res) =>{
   res.send(savedTeachingAssistant);
 })
 
-app.post("/meetingslot", async(req, res) =>{
-  const {slotTime, teachingAssistant, doubt} = req.body
+app.post("/meetingslot", async (req, res) => {
+  const { slotTime, teachingAssistant, doubt } = req.body
 
   const newMeetingSlot = new MeetingSlot({
     slotTime,
