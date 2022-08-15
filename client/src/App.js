@@ -1,11 +1,20 @@
 import './App.css';
-import Home from './View/Home/Home';
+import Home from './View/Home/Home'
+import AskDoubt from './View/AskDoubt/AskDoubt'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 function App() {
   return (
-    <div>
-        <Home/>
-      </div>
+   <BrowserRouter>
+   <Routes>
+    <Route path="/" element={<Home/>}/>
+    <Route path="/askdoubt" element={<AskDoubt/>}/>
+   </Routes>
+   </BrowserRouter>
   );
 }
 
