@@ -3,14 +3,13 @@ import "./AskDoubt.css"
 import ImgDoubtWithMan from "./img/doubt-with-man.png"
 import ImgDoubtWithBoy from "./img/doubt-with-boy.png"
 import axios from "axios";
-import DoubtCard from "../DoubtCard/DoubtCard";
+import DoubtCard from "./../../components/DoubtCard/DoubtCard";
+const headerImage = Math.floor(Math.random() * 2) ?
+ImgDoubtWithMan : ImgDoubtWithBoy;
 
 
 function AskDoubt() {
-  const headerImage = Math.floor(Math.random() * 2) ?
-    ImgDoubtWithMan : ImgDoubtWithBoy;
-
-  const [doubts, setDoubts] =useState([]);
+  const [doubts, setDoubts] = useState([]);
 
   const [newDoubt, setNewDoubt] = useState({
     title: "",
@@ -24,21 +23,13 @@ function AskDoubt() {
   useEffect(() => {
     const chalkTalkUser = JSON.parse(localStorage.getItem("chalkTalkUser"));
     setUser(chalkTalkUser);
-
     setNewDoubt({...newDoubt, email: chalkTalkUser.email});
   }, [])
 
-
-
   async function askDobut() {
-    console.log(newDoubt.title)
-    console.log(newDoubt.description)
-    console.log(newDoubt.slot)
-    console.log(newDoubt.courseName)
-
     await axios.post("/doubt", newDoubt);
 
-    setDoubts({ title: "", description: "", slot: "", courseName: "" });
+    setNewDoubt({ title: "", description: "", slot: "", courseName: "" });
 
     alert('Dobut added successfully!')
   }
@@ -46,10 +37,12 @@ function AskDoubt() {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(`/doubts?email=${user.email}`);
-      setDoubts(response.data);
+      if(response.data.length > 0) {
+        setDoubts(response.data);
+      }
     }
     fetchData();
-  }, [user.email]);
+  }, [user, newDoubt]);
 
   return (
     <>
@@ -57,7 +50,7 @@ function AskDoubt() {
         <div className="row">
           <div className="col-md-6">
             <h1 className="text-center">Ask Dobut 🤔</h1>
-            <div class="card shawdow-lg w-100 mt-3">
+            <div className="card shawdow-lg w-100 mt-3">
               <div className="card-body">
                 <form>
                   <div className="mb-3">
@@ -70,26 +63,24 @@ function AskDoubt() {
                       onChange={(e) => setNewDoubt({ ...newDoubt, title: e.target.value })} />
                   </div> 
                   <div className="mb-3">
-                    <textarea class="form-control" id="doubtDescription" placeholder="Describe your doubt here..." 
+                    <textarea className="form-control" id="doubtDescription" placeholder="Describe your doubt here..." 
                     value={newDoubt.description}
                     onChange={(e) => setNewDoubt({ ...newDoubt, description: e.target.value })}
                     rows="3"></textarea>
                   </div>
                   <div className="mb-3">
-                    <select class="form-select" aria-label="Select Course" 
+                    <select className="form-select" aria-label="Select Course" 
                     value={newDoubt.courseName}
                     onChange={(e) => setNewDoubt({...newDoubt, courseName: e.target.value })} >
-                      <option selected>Select Course</option>
-                      <option value="C Programming">C Programming</option>
-                      <option value="C++ Programming">C++ Programming</option>
-                      <option value="Python Programming">Python Programming</option>
-                      <option value="Internship Cohort Program">Internship Cohort Program</option>
+                      <option value="c">C Programming</option>
+                      <option value="cpp">C++ Programming</option>
+                      <option value="python">Python Programming</option>
+                      <option value="icp">Internship Cohort Program</option>
                     </select>
                   </div>
                   <div className="mb-3">
-                    <select class="form-select" aria-label="Select Time Slot" value={newDoubt.slot}
+                    <select className="form-select" aria-label="Select Time Slot" value={newDoubt.slot}
                       onChange={(e) => setNewDoubt({...newDoubt, slot: e.target.value })} >
-                      <option selected>Select Time Slot</option>
                       <option value="8AM">8AM</option>
                       <option value="10AM">10AM</option>
                       <option value="2PM">2PM</option>
@@ -113,13 +104,17 @@ function AskDoubt() {
 
             <div className="row mt-3">
            {
-             doubts.map(doubt => {
+            doubts &&  doubts.map((doubt, i) => {
                return (
                         <DoubtCard 
+                         key = {i}
                          title = {doubt.title}
                          description = {doubt.description}
                          slot = {doubt.slot}
                          courseName = {doubt.courseName}
+                         status = {doubt.status}
+                         taName = {doubt.teachingAssistant[0].fullName}
+                         taMobile = {doubt.teachingAssistant[0].mobile}
                         />
                )
              })
