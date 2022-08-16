@@ -6,7 +6,6 @@ const mongoose = require('mongoose')
 const User = require('./models/User')
 const Doubt = require('./models/Doubt');
 const TeachingAssistant = require('./models/TeachingAssistant');
-const MeetingSlot = require("./models/MeetingSlot");
 const { default: axios } = require('axios');
 
 const app = express();
@@ -24,7 +23,7 @@ app.get('/health', (req, res) => {
   })
 })
 
-app.post('/register', async (req, res) => {
+app.post('/user', async (req, res) => {
   const { fullName, email, mobile } = req.body
 
   if (!fullName) {
@@ -84,25 +83,30 @@ app.post('/register', async (req, res) => {
 })
 
 app.post("/doubt", async (req, res) => {
-  const { title, description, courseName, status, user } = req.body
+  const { title, description, courseName, slot, status, email } = req.body
+
+  const user = await User.findOne({
+    email
+  })
 
   const newDoubt = new Doubt({
     title,
     description,
     courseName,
+    slot,
     status,
-    user
+    user: user
   })
   // TODO: send notification to slack channel
   const teachingAssistantName = "Vaibhavi"
   const studentName = "Suraj"
   const studentMobileNo = "7821011979"
-  const slotTime = "8pm to 9pm"
+  // const slot = "8pm to 9pm"
 
   const response = await axios.post("https://slack.com/api/chat.postMessage", {
     "channel": "C03N225P5FX",
     "text": `Hello *${teachingAssistantName}*, New doubt is assigned to you.
-*${studentName}* has asked *${title}*. Doubt Session with him is scheduled at *${slotTime}*. 
+*${studentName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*. 
 please call him now to inform about this session *${studentMobileNo}*.
 More details are avilable in your dashboard. `
   }, {
@@ -114,6 +118,19 @@ More details are avilable in your dashboard. `
   const savedDoubt = await newDoubt.save();
   res.send(savedDoubt);
 })
+
+app.get('/doubts', async (req, res) => {
+  const email = req.query.email;
+  const user = await User.findOne({
+    email
+  })
+
+  const doubt = await Doubt.find({
+    user: user
+  });
+  res.json(doubt);
+})
+
 
 app.post("/assistant", async (req, res) => {
   const { fullName, email, mobile, password } = req.body
@@ -127,19 +144,6 @@ app.post("/assistant", async (req, res) => {
 
   const savedTeachingAssistant = await newTeachingAssistant.save();
   res.send(savedTeachingAssistant);
-})
-
-app.post("/meetingslot", async (req, res) => {
-  const { slotTime, teachingAssistant, doubt } = req.body
-
-  const newMeetingSlot = new MeetingSlot({
-    slotTime,
-    teachingAssistant,
-    doubt
-  })
-
-  const savedMeetingSlot = await newMeetingSlot.save();
-  res.send(savedMeetingSlot);
 })
 
 if (process.env.NODE_ENV === 'production') {

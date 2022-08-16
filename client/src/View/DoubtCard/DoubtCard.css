@@ -1,0 +1,10 @@
+.container-recent-doubt{
+    float: left;
+    border: 2px solid black;
+    width: 550px;
+    height: auto;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 10px 10px 10px 10px;
+    background-color:aliceblue;
+}
