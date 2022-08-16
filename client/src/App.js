@@ -1,6 +1,7 @@
 import './App.css';
-import Home from './View/Home/Home'
-import AskDoubt from './View/AskDoubt/AskDoubt'
+import Home from './views/Home/Home'
+import AskDoubt from './views/AskDoubt/AskDoubt'
+import Dashboard from './views/Dashboard/Dashboard'
 import {
   BrowserRouter,
   Routes,
@@ -13,6 +14,7 @@ function App() {
    <Routes>
     <Route path="/" element={<Home/>}/>
     <Route path="/askdoubt" element={<AskDoubt/>}/>
+    <Route path="/dashboard" element={<Dashboard/>}/>
    </Routes>
    </BrowserRouter>
   );

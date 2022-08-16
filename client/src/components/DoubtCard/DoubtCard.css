@@ -1,0 +1,38 @@
+.card-recent-doubt{
+ min-width: 100%;
+ border-left: 5px solid;
+ margin: 10px;
+ padding: 5px;
+}
+
+.pending-doubt{
+  border-color: #ff704d;
+}
+.pending-bg{
+  background-color: #ff704d;
+}
+
+.attended-doubt{
+    border-color: #f0ad4e;
+}
+.attended-bg{
+  background-color: #f0ad4e;
+}
+
+.resolved-doubt{
+  border-color: #339966;
+}
+.resolved-bg{
+  background-color: #339966;
+}
+
+.doubt-card-status-badge{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border-radius: 15px;
+  padding:1px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;;
+}

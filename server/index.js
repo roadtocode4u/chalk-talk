@@ -7,6 +7,7 @@ const User = require('./models/User')
 const Doubt = require('./models/Doubt');
 const TeachingAssistant = require('./models/TeachingAssistant');
 const { default: axios } = require('axios');
+const getTAEmail = require('./utils/getTAEmail');
 
 const app = express();
 app.use(bodyParser.json());
@@ -88,6 +89,10 @@ app.post("/doubt", async (req, res) => {
   const user = await User.findOne({
     email
   })
+  const TAEmail = getTAEmail(courseName);
+  const teachingAssistant = await TeachingAssistant.findOne({
+    email: TAEmail
+  })
 
   const newDoubt = new Doubt({
     title,
@@ -95,19 +100,16 @@ app.post("/doubt", async (req, res) => {
     courseName,
     slot,
     status,
-    user: user
+    user: user,
+    teachingAssistant: teachingAssistant,
   })
   // TODO: send notification to slack channel
-  const teachingAssistantName = "Vaibhavi"
-  const studentName = "Suraj"
-  const studentMobileNo = "7821011979"
-  // const slot = "8pm to 9pm"
-
+  
   const response = await axios.post("https://slack.com/api/chat.postMessage", {
     "channel": "C03N225P5FX",
-    "text": `Hello *${teachingAssistantName}*, New doubt is assigned to you.
-*${studentName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*. 
-please call him now to inform about this session *${studentMobileNo}*.
+    "text": `Hello *${teachingAssistant.fullName}*, New doubt is assigned to you.
+*${user.fullName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*. 
+please call him now to inform about this session *${user.mobile}*.
 More details are avilable in your dashboard. `
   }, {
     headers: {
@@ -122,13 +124,29 @@ More details are avilable in your dashboard. `
 app.get('/doubts', async (req, res) => {
   const email = req.query.email;
   const user = await User.findOne({
-    email
+    email: email
   })
 
-  const doubt = await Doubt.find({
-    user: user
-  });
-  res.json(doubt);
+  if(!user) {
+    return res.send([])
+  }
+
+  const doubts = await Doubt.aggregate([
+    {
+      $match: {
+        user: user._id
+      }
+    },
+    {
+    $lookup: {
+      from: "teachingassistants",
+      localField: "teachingAssistant",
+      foreignField: "_id",
+      as: "teachingAssistant"
+    }
+  }
+  ]);
+  res.json(doubts);
 })
 
 
