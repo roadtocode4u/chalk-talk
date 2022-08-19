@@ -89,6 +89,22 @@ app.post("/doubt", async (req, res) => {
   const user = await User.findOne({
     email
   })
+  // TODO: if pending doubt is already for user then return pending message 
+  
+  const pendingDobuts = await Doubt.find({
+    user: user, 
+    status: "pending"
+  })
+
+  if(pendingDobuts.length>0)
+  {
+   return res.json({ 
+      success: false, 
+      data: [], 
+      message: "You can ask new dobut once pending dobut is resovled" 
+    }) 
+  }
+
   const TAEmail = getTAEmail(courseName);
   const teachingAssistant = await TeachingAssistant.findOne({
     email: TAEmail
@@ -118,7 +134,11 @@ More details are avilable in your dashboard. `
   })
 
   const savedDoubt = await newDoubt.save();
-  res.send(savedDoubt);
+  res.json({
+    success: true, 
+    data: savedDoubt, 
+    message: "New doubt is added successfully" 
+  })
 })
 
 app.get('/doubts', async (req, res) => {

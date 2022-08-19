@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import swal from "sweetalert";
 import "./AskDoubt.css"
 import ImgDoubtWithMan from "./img/doubt-with-man.png"
 import ImgDoubtWithBoy from "./img/doubt-with-boy.png"
-import axios from "axios";
 import DoubtCard from "./../../components/DoubtCard/DoubtCard";
 const headerImage = Math.floor(Math.random() * 2) ?
 ImgDoubtWithMan : ImgDoubtWithBoy;
@@ -27,11 +28,10 @@ function AskDoubt() {
   }, [])
 
   async function askDobut() {
-    await axios.post("/doubt", newDoubt);
+    const response = await axios.post("/doubt", newDoubt);
 
     setNewDoubt({ title: "", description: "", slot: "", courseName: "" });
-
-    alert('Dobut added successfully!')
+    swal("", response.data.message , response.data.success?  "success" : "warning");
   }
 
   useEffect(() => {
