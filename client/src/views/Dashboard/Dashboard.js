@@ -48,9 +48,11 @@ function Dashboard() {
             return(
               <TADoubtCard doubt={doubt} key={index} />
               )
-      }
-    </div>
+      })
+    }
+      </div>
   )
 }
+
 
 export default Dashboard
