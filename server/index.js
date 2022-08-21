@@ -8,6 +8,7 @@ const Doubt = require('./models/Doubt');
 const TeachingAssistant = require('./models/TeachingAssistant');
 const { default: axios } = require('axios');
 const getTAEmail = require('./utils/getTAEmail');
+const { response } = require('express');
 
 const app = express();
 app.use(bodyParser.json());
@@ -169,19 +170,48 @@ app.get('/doubts', async (req, res) => {
   res.json(doubts);
 })
 
+app.get('/doubtsforta/:email', async (req, res) => {
+ const {email}= req.params;
+ 
+ const teachingAssistant = await TeachingAssistant.findOne({
+    email: email
+ })
+
+  if(!teachingAssistant) {
+    return res.send([])
+  }
+  
+  const doubts = await Doubt.find({
+    teachingAssistant: teachingAssistant
+  })
+  res.send(doubts);
+})
 
 app.post("/assistant", async (req, res) => {
-  const { fullName, email, mobile, password } = req.body
+  const { fullName, email, mobile, token } = req.body
 
   const newTeachingAssistant = new TeachingAssistant({
     fullName,
     email,
     mobile,
-    password
+    token
   })
 
   const savedTeachingAssistant = await newTeachingAssistant.save();
   res.send(savedTeachingAssistant);
+})
+
+
+app.get('/assistants', async (req, res) => {
+  const {email, token} = req.query;
+  const teachingAssistant = await TeachingAssistant.findOne({
+    email: email,
+    token: token
+  });
+  res.send({
+    success: teachingAssistant ? true : false,
+    data: teachingAssistant
+  })
 })
 
 if (process.env.NODE_ENV === 'production') {

@@ -22,7 +22,7 @@ function Home() {
         email: email
       })
     }
-  }, [email, user]);
+  }, [email]);
 
 
   let navigate = useNavigate();
