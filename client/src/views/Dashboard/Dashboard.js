@@ -3,6 +3,7 @@ import { useSearchParams }  from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
 import TADoubtCard from '../../components/TADoubtCard/TADoubtCard';
+import './Dashboard.css';
 
 function Dashboard() {
 
@@ -40,6 +41,9 @@ function Dashboard() {
 
   return (
     <div className='container'>
+      <div className='ta-greeting'>
+        <h4>Hello, {teachingAssistant.fullName}. There are {doubts.length} doubts in your dashboard...</h4>
+      </div>
       {
         doubts.map((doubt,index)=>{
             return(
