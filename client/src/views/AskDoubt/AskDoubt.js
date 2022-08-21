@@ -26,7 +26,7 @@ function AskDoubt() {
   });
 
   const [user, setUser] = useState({});
-  
+
   useEffect(() => {
     const chalkTalkUser = JSON.parse(localStorage.getItem("chalkTalkUser"));
     setUser(chalkTalkUser);
@@ -34,10 +34,10 @@ function AskDoubt() {
 
     const slots = getSlots()
     setAvailableSlots(slots)
-   
-  }, [])
 
-  async function askDobut() {
+  }, [newDoubt])
+
+  async function askDoubt() {
     const response = await axios.post("/doubt", newDoubt);
 
     setNewDoubt({ title: "", description: "", slot: "", courseName: "" });
@@ -71,15 +71,15 @@ function AskDoubt() {
                       placeholder="Doubt Topic/Title e.g. Inheritance"
                       value={newDoubt.title}
                       onChange={(e) => setNewDoubt({ ...newDoubt, title: e.target.value })} />
-                  </div> 
+                  </div>
                   <div className="mb-3">
-                    <textarea className="form-control" id="doubtDescription" placeholder="Describe your doubt here..." 
+                    <textarea className="form-control" id="doubtDescription" placeholder="Describe your doubt here..."
                     value={newDoubt.description}
                     onChange={(e) => setNewDoubt({ ...newDoubt, description: e.target.value })}
                     rows="3"></textarea>
                   </div>
                   <div className="mb-3">
-                    <select className="form-select" aria-label="Select Course" 
+                    <select className="form-select" aria-label="Select Course"
                     value={newDoubt.courseName}
                     onChange={(e) => setNewDoubt({...newDoubt, courseName: e.target.value })} >
                       <option> Select Course </option>
@@ -98,7 +98,7 @@ function AskDoubt() {
                      })}
                     </select>
                   </div>
-                  <button className="btn btn-warning w-100" type='button' onClick={askDobut}>
+                  <button className="btn btn-warning w-100" type='button' onClick={askDoubt}>
                     <i className="fa-solid fa-right-to-bracket" ></i> Ask Doubt
                   </button>
                 </form>
@@ -116,7 +116,7 @@ function AskDoubt() {
            {
             doubts &&  doubts.map((doubt, i) => {
                return (
-                        <DoubtCard 
+                        <DoubtCard
                          key = {i}
                          title = {doubt.title}
                          description = {doubt.description}

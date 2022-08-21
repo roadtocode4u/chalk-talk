@@ -3,7 +3,7 @@ import "./Home.css";
 import ImgBoyTakingNotes from './img/boy-taking-notes.png'
 import ImgGirlWithLaptop from './img/girl-with-laptop.png'
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useSearchParams}  from 'react-router-dom';
 
 function Home() {
   const [user, setUser] = useState({
@@ -12,17 +12,30 @@ function Home() {
     mobile: ""
   });
 
+  let [searchParams] = useSearchParams();
+
+  const email = searchParams.get('email');
+  useEffect(() =>{
+    if(email){
+      setUser({
+        ...user,
+        email: email
+      })
+    }
+  }, [email, user]);
+
+
   let navigate = useNavigate();
   useEffect(()=>{
     const chalkTalkUser = JSON.parse(localStorage.getItem('chalkTalkUser'));
     if(chalkTalkUser){
       navigate('/askdoubt');
     }
-  }, [])
+  }, [navigate]);
 
   const headerImage = Math.floor(Math.random() * 2) ?
     ImgBoyTakingNotes : ImgGirlWithLaptop;
-  
+
   const proceed = async() => {
     const response = await axios.post('/user', user);
     if(response){
@@ -68,6 +81,7 @@ function Home() {
                       value={user.email}
                       onChange={(e) => setUser({ ...user, email: e.target.value })}
                       required
+                      disabled
                     />
                   </div>
                   <div className="mb-3">
