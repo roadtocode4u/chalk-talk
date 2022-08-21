@@ -23,6 +23,10 @@ const allSlots = [
     startHour: 19,
     title: "7:00 PM - 8:00 PM",
   },
+  {
+    startHour: 23,
+    title: "11:00 PM - 12:00 PM",
+  }
 ];
 
 export default function getSlots() {
