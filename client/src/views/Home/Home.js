@@ -22,7 +22,7 @@ function Home() {
         email: email
       })
     }
-  }, [email, user]);
+  }, [email]);
 
 
   let navigate = useNavigate();
@@ -108,7 +108,7 @@ function Home() {
             <h5>✅Realtime collaboration</h5>
             <h5>✅Motivates to learning , growing and programming</h5>
             <h5>✅Clear your doubts of programming</h5>
-            <h5>✅No time limit</h5>
+            <h5>✅Set clear communication with your teaching assistant</h5>
 
           </div>
         </div>
