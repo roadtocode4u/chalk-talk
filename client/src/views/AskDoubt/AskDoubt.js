@@ -11,7 +11,6 @@ import getSlots from "../../utils/getSlots";
 const headerImage = Math.floor(Math.random() * 2) ?
 ImgDoubtWithMan : ImgDoubtWithBoy;
 
-
 function AskDoubt() {
   const [doubts, setDoubts] = useState([]);
 
@@ -65,7 +64,7 @@ function AskDoubt() {
       courseName: "",
       email: ""
     });
-    
+
   }, [user.email, triggerFetchDoubts]);
 
   return (
@@ -73,7 +72,7 @@ function AskDoubt() {
       <div className="container mt-5">
         <div className="row">
           <div className="col-md-6">
-            <h1 className="text-center">Ask Dobut 🤔</h1>
+            <h1 className="text-center">Ask Doubt 🤔</h1>
             <div className="card shawdow-lg w-100 mt-3">
               <div className="card-body">
                 <form>
