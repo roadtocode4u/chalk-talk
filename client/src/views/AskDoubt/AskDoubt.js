@@ -5,12 +5,17 @@ import "./AskDoubt.css"
 import ImgDoubtWithMan from "./img/doubt-with-man.png"
 import ImgDoubtWithBoy from "./img/doubt-with-boy.png"
 import DoubtCard from "./../../components/DoubtCard/DoubtCard";
+import getSlots from "../../utils/getSlots";
+
+
 const headerImage = Math.floor(Math.random() * 2) ?
 ImgDoubtWithMan : ImgDoubtWithBoy;
 
 
 function AskDoubt() {
   const [doubts, setDoubts] = useState([]);
+
+  const [availableSlots , setAvailableSlots]  = useState([]);
 
   const [newDoubt, setNewDoubt] = useState({
     title: "",
@@ -21,17 +26,22 @@ function AskDoubt() {
   });
 
   const [user, setUser] = useState({});
+  
   useEffect(() => {
     const chalkTalkUser = JSON.parse(localStorage.getItem("chalkTalkUser"));
     setUser(chalkTalkUser);
     setNewDoubt({...newDoubt, email: chalkTalkUser.email});
+
+    const slots = getSlots()
+    setAvailableSlots(slots)
+   
   }, [])
 
   async function askDobut() {
     const response = await axios.post("/doubt", newDoubt);
 
     setNewDoubt({ title: "", description: "", slot: "", courseName: "" });
-    swal("", response.data.message , response.data.success?  "success" : "warning");
+    swal("", response.data.message , response.data.success ?  "success" : "warning");
   }
 
   useEffect(() => {
@@ -72,6 +82,7 @@ function AskDoubt() {
                     <select className="form-select" aria-label="Select Course" 
                     value={newDoubt.courseName}
                     onChange={(e) => setNewDoubt({...newDoubt, courseName: e.target.value })} >
+                      <option> Select Course </option>
                       <option value="c">C Programming</option>
                       <option value="cpp">C++ Programming</option>
                       <option value="python">Python Programming</option>
@@ -81,11 +92,10 @@ function AskDoubt() {
                   <div className="mb-3">
                     <select className="form-select" aria-label="Select Time Slot" value={newDoubt.slot}
                       onChange={(e) => setNewDoubt({...newDoubt, slot: e.target.value })} >
-                      <option value="8AM">8AM</option>
-                      <option value="10AM">10AM</option>
-                      <option value="2PM">2PM</option>
-                      <option value="4PM">4PM</option>
-                      <option value="8PM">8PM</option>
+                        <option> Select Time Slot </option>
+                     {availableSlots.map((slots)=>{
+                      return (<option value={slots.title}>{slots.title}</option>)
+                     })}
                     </select>
                   </div>
                   <button className="btn btn-warning w-100" type='button' onClick={askDobut}>

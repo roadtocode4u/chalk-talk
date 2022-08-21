@@ -25,6 +25,7 @@ const allSlots = [
   },
 ];
 
-export default function getSlots(currentHour) {
+export default function getSlots() {
+  const currentHour = new Date().getHours()
   return allSlots.filter((slot) => slot.startHour >= currentHour + 2);
 }
