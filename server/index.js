@@ -1,3 +1,4 @@
+
 const express = require("express");
 require("dotenv").config();
 const bodyParser = require("body-parser");
@@ -9,6 +10,7 @@ const TeachingAssistant = require("./models/TeachingAssistant");
 const { default: axios } = require("axios");
 const getTAEmail = require("./utils/getTAEmail");
 const { response } = require("express");
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -223,8 +225,25 @@ app.get("/doubtsforta/:email", async (req, res) => {
   res.send(doubts);
 });
 
+app.get('/doubtsforta/:email', async (req, res) => {
+ const {email}= req.params;
+ 
+ const teachingAssistant = await TeachingAssistant.findOne({
+    email: email
+ })
+
+  if(!teachingAssistant) {
+    return res.send([])
+  }
+  
+  const doubts = await Doubt.find({
+    teachingAssistant: teachingAssistant
+  })
+  res.send(doubts);
+})
+
 app.post("/assistant", async (req, res) => {
-  const { fullName, email, mobile, token } = req.body;
+  const { fullName, email, mobile, token } = req.body
 
   const newTeachingAssistant = new TeachingAssistant({
     fullName,
@@ -267,8 +286,21 @@ app.post("/updatedoubt", async (req, res) => {
   });
 });
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "..", "client", "build")));
+app.get('/assistants', async (req, res) => {
+  const {email, token} = req.query;
+  const teachingAssistant = await TeachingAssistant.findOne({
+    email: email,
+    token: token
+  });
+  res.send({
+    success: teachingAssistant ? true : false,
+    data: teachingAssistant
+  })
+})
+
+if (process.env.NODE_ENV 
+'production') {
+  app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"));

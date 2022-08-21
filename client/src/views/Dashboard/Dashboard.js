@@ -34,7 +34,6 @@ function Dashboard() {
       if(response){
         setDoubts(response.data);
       }
-      console.log(response.data);
     }
       fetchData();
   },[teachingAssistant]);
@@ -48,8 +47,7 @@ function Dashboard() {
         doubts.map((doubt,index)=>{
             return(
               <TADoubtCard doubt={doubt} key={index} />
-            )
-        })
+              )
       }
     </div>
   )
