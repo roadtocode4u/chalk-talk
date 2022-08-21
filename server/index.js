@@ -188,7 +188,8 @@ app.get("/doubtsforta/:email", async (req, res) => {
   if (!teachingAssistant) {
     return res.send([]);
   }
-
+  const doubtStatuses = ["pending", "attended", "resolved"]
+  
   const doubts = await Doubt.aggregate([
     {
       $match: {
@@ -201,11 +202,22 @@ app.get("/doubtsforta/:email", async (req, res) => {
         localField: "user",
         foreignField: "_id",
         as: "user",
-      },
+      }
+    },
+    {
+      "$addFields" : {
+         "__order" : { "$indexOfArray" : [ doubtStatuses, "$status" ] }
+        } 
+      
     },
     {
       $unwind: "$user",
     },
+    {
+      $sort: {
+        __order: 1,
+      }
+    }
   ]);
 
   res.send(doubts);
