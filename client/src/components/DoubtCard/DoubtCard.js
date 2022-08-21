@@ -1,17 +1,12 @@
 import React from 'react'
+import './../../styles/doubtCard.css'
 import "./DoubtCard.css"
-
-const COURSE_NAME_MAP = {
-  "icp": "Intership Cohort Program",
-  "c": "C Programming",
-  "cpp": "C++ Programming",
-  "python": "Python Programming"
-}
+import { COURSE_NAME_MAP } from './../../utils/subjects'
 
 function DoubtCard(props) {
   return (
-    <div className={`card card-recent-doubt ${props.status}-doubt`}>
-      <span className={`doubt-card-status-badge ${props.status}-bg`}>{props.status}</span>
+    <div className={`card doubt-card ${props.status}-doubt`}>
+      <span className={`doubt-status-badge ${props.status}-bg`}>{props.status}</span>
       <div>
         <h6>{props.title} </h6>
         {props.description}

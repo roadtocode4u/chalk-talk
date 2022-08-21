@@ -180,10 +180,26 @@ app.get('/doubtsforta/:email', async (req, res) => {
   if(!teachingAssistant) {
     return res.send([])
   }
-  
-  const doubts = await Doubt.find({
-    teachingAssistant: teachingAssistant
-  })
+
+  const doubts = await Doubt.aggregate([
+    {
+      $match: {
+        teachingAssistant: teachingAssistant._id
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    {
+      $unwind: "$user"
+    }
+  ]);
+
   res.send(doubts);
 })
 

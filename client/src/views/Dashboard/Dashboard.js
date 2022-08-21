@@ -33,16 +33,17 @@ function Dashboard() {
       if(response){
         setDoubts(response.data);
       }
+      console.log(response.data);
     }
       fetchData();
   },[teachingAssistant]);
 
   return (
-    <div>
+    <div className='container'>
       {
         doubts.map((doubt,index)=>{
             return(
-              <TADoubtCard title={doubt.title} key={index} />
+              <TADoubtCard doubt={doubt} key={index} />
             )
         })
       }
