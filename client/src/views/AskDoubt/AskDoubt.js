@@ -17,6 +17,8 @@ function AskDoubt() {
 
   const [availableSlots , setAvailableSlots]  = useState([]);
 
+  const [triggerFetchDoubts, setTriggerFetchDoubts] = useState(false);
+
   const [newDoubt, setNewDoubt] = useState({
     title: "",
     description: "",
@@ -40,8 +42,10 @@ function AskDoubt() {
   async function askDoubt() {
     const response = await axios.post("/doubt", newDoubt);
 
-    setNewDoubt({ title: "", description: "", slot: "", courseName: "" });
     swal("", response.data.message , response.data.success ?  "success" : "warning");
+
+    setTriggerFetchDoubts(!triggerFetchDoubts)
+   
   }
 
   useEffect(() => {
@@ -52,7 +56,17 @@ function AskDoubt() {
       }
     }
     fetchData();
-  }, [user, newDoubt]);
+
+     // make new doubt as a empty
+     setNewDoubt({
+      title: "",
+      description: "",
+      slot: "",
+      courseName: "",
+      email: ""
+    });
+    
+  }, [user.email, triggerFetchDoubts]);
 
   return (
     <>
@@ -93,8 +107,8 @@ function AskDoubt() {
                     <select className="form-select" aria-label="Select Time Slot" value={newDoubt.slot}
                       onChange={(e) => setNewDoubt({...newDoubt, slot: e.target.value })} >
                         <option> Select Time Slot </option>
-                     {availableSlots.map((slots)=>{
-                      return (<option value={slots.title}>{slots.title}</option>)
+                     {availableSlots.map((slots, i)=>{
+                      return (<option value={slots.title} key={i}>{slots.title}</option>)
                      })}
                     </select>
                   </div>
