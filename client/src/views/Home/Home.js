@@ -37,6 +37,10 @@ function Home() {
     ImgBoyTakingNotes : ImgGirlWithLaptop;
 
   const proceed = async() => {
+    if(!user.email || !user.fullName || !user.mobile){
+         alert("Please enter all the fields")
+         return;
+    }
     const response = await axios.post('/user', user);
     if(response){
       localStorage.setItem('chalkTalkUser', JSON.stringify(response.data));

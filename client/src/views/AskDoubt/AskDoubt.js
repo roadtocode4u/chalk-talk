@@ -39,6 +39,10 @@ function AskDoubt() {
   }, [newDoubt])
 
   async function askDoubt() {
+    if(!newDoubt.title || !newDoubt.description || !newDoubt.slot || !newDoubt.courseName){
+      swal("Please fill all the fields");
+      return;
+    }
     const response = await axios.post("/doubt", newDoubt);
 
     swal("", response.data.message , response.data.success ?  "success" : "warning");
