@@ -8,9 +8,21 @@ const User = require("./models/User");
 const Doubt = require("./models/Doubt");
 const TeachingAssistant = require("./models/TeachingAssistant");
 const { default: axios } = require("axios");
-const getTAEmail = require("./utils/getTAEmail");
 const { response } = require("express");
 
+const TAEmailMap = {
+  'icp': ['itspinki05@gmail.com', 'vaishnavihole1@gmail.com', 'prajaktadharpure28@gmail.com'],
+  'c' : ['itspinki05@gmail.com', 'vaishnavihole1@gmail.com'],
+  'cpp' : ['itspinki05@gmail.com','anandshirbhaiyye@gmail.com', 'prajaktadharpure28@gmail.com'],
+  'python': ['sakoretejal1511@gmail.com', 'itspinki05@gmail.com'],
+  "dsa": ['prajaktadharpure28@gmail.com', 'anandshirbhaiyye@gmail.com', 'yashdip123@gmail.com'],
+};
+
+const getTAEmail = (course) => {
+  const TAMailArray = TAEmailMap[course]
+  const randomIndex = Math.floor(Math.random() * TAMailArray.length)
+  return TAMailArray[randomIndex]
+}
 
 const app = express();
 app.use(bodyParser.json());
@@ -133,7 +145,7 @@ app.post("/doubt", async (req, res) => {
     {
       channel: "C03N225P5FX",
       text: `Hello *${teachingAssistant.fullName}*, New doubt is assigned to you.
-*${user.fullName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*. 
+*${user.fullName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*.
 please call him now to inform about this session *${user.mobile}*.
 More details are avilable in your dashboard. `,
     },
@@ -191,7 +203,7 @@ app.get("/doubtsforta/:email", async (req, res) => {
     return res.send([]);
   }
   const doubtStatuses = ["pending", "attended", "resolved"]
-  
+
   const doubts = await Doubt.aggregate([
     {
       $match: {
@@ -209,8 +221,8 @@ app.get("/doubtsforta/:email", async (req, res) => {
     {
       "$addFields" : {
          "__order" : { "$indexOfArray" : [ doubtStatuses, "$status" ] }
-        } 
-      
+        }
+
     },
     {
       $unwind: "$user",
@@ -227,7 +239,7 @@ app.get("/doubtsforta/:email", async (req, res) => {
 
 app.get('/doubtsforta/:email', async (req, res) => {
  const {email}= req.params;
- 
+
  const teachingAssistant = await TeachingAssistant.findOne({
     email: email
  })
@@ -235,7 +247,7 @@ app.get('/doubtsforta/:email', async (req, res) => {
   if(!teachingAssistant) {
     return res.send([])
   }
-  
+
   const doubts = await Doubt.find({
     teachingAssistant: teachingAssistant
   })
