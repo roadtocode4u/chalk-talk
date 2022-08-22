@@ -1,8 +1,9 @@
 const TAEmailMap = {
-  'icp': ['itspinki05@gmail.com', 'anandshirbhaiyye@gmail.com', 'prajaktadharpure28@gmail.com'],
-  'c' : ['itspinki05@gmail.com'],
+  'icp': ['itspinki05@gmail.com', 'vaishnavihole1@gmail.com', 'prajaktadharpure28@gmail.com'],
+  'c' : ['itspinki05@gmail.com', 'vaishnavihole1@gmail.com'],
   'cpp' : ['itspinki05@gmail.com','anandshirbhaiyye@gmail.com', 'prajaktadharpure28@gmail.com'],
-  'python': ['sakoretejal1511@gmail.com', 'itspinki05@gmail.com']
+  'python': ['sakoretejal1511@gmail.com', 'itspinki05@gmail.com'],
+  "dsa": ['prajaktadharpure28@gmail.com', 'anandshirbhaiyye@gmail.com', 'yashdip123@gmail.com'],
 };
 
 const getTAEmail = (course) => {
