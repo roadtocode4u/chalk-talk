@@ -15,14 +15,18 @@ function Home() {
   let [searchParams] = useSearchParams();
 
   const email = searchParams.get('email');
+  const fullName = searchParams.get('fullName');
+  const mobile = searchParams.get('mobile');
   useEffect(() =>{
     if(email){
       setUser({
         ...user,
-        email: email
+        email: email,
+        fullName: fullName,
+        mobile: mobile
       })
     }
-  }, [email]);
+  }, [email, fullName, mobile]);
 
 
   let navigate = useNavigate();
@@ -74,6 +78,7 @@ function Home() {
                       value={user.fullName}
                       onChange={(e) => setUser({ ...user, fullName: e.target.value })}
                       required
+                      disabled
                     />
                   </div>
                   <div className="mb-3">
