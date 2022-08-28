@@ -56,9 +56,9 @@ const doubtPost = async (req, res) => {
     "https://slack.com/api/chat.postMessage",
     {
       channel: "C03N225P5FX",
-      text: `Hello *${teachingAssistant.fullName}*, New doubt is assigned to you.
-  *${user.fullName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*.
-  please call him now to inform about this session *${user.mobile}*.
+      text: `Hello *${teachingAssistant?.fullName || 'TA'}*, New doubt is assigned to you.
+  *${user?.fullName || 'Student'}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*.
+  please call him now to inform about this session *${user?.mobile || ''}*.
   More details are avilable in your dashboard. `,
     },
     {
