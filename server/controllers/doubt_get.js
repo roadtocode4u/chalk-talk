@@ -1,5 +1,6 @@
 const Doubt = require("./../models/Doubt");
 const User = require("./../models/User");
+const TeachingAssistant = require("./../models/TeachingAssistant");
 
 const doubtGet = async (req, res) => {
   const email = req.query.email;
