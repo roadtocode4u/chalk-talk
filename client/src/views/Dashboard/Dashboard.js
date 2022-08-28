@@ -4,9 +4,33 @@ import axios from 'axios';
 import swal from 'sweetalert';
 import TADoubtCard from '../../components/TADoubtCard/TADoubtCard';
 import './Dashboard.css';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const data = {
+  labels: ['pending', 'attednded', 'resolved'],
+  datasets: [
+    {
+      label: 'Doubt Status',
+      data: [12, 19, 3],
+      backgroundColor: [
+        '#ff704d',
+        '#f0ad4e',
+        '#339966'
+      ],
+      borderColor: [
+        '#ffffff',
+        '#ffffff',
+        '#ffffff'
+      ],
+      borderWidth: 2,
+    },
+  ],
+};
 
 function Dashboard() {
-
+  
   const [doubts, setDoubts] = useState([])
   const [teachingAssistant, setTeachingAssistant] = useState({});
   
@@ -38,10 +62,15 @@ function Dashboard() {
       fetchData();
   },[teachingAssistant]);
 
+    
+
   return (
     <div className='container'>
       <div className='ta-greeting'>
         <h4>Hello, {teachingAssistant.fullName}. There are {doubts.length} doubts in your dashboard...</h4>
+      </div>
+      <div>
+      <Pie className='chart' data={data} height={300} options={{ maintainAspectRatio: false }}/>
       </div>
       {
         doubts.map((doubt,index)=>{
