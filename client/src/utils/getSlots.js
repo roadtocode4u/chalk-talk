@@ -16,6 +16,10 @@ const allSlots = [
     title: "2:00 PM - 3:00 PM",
   },
   {
+    startHour: 15,
+    title: "3:00 PM - 4:00 PM",
+  },
+  {
     startHour: 16,
     title: "4:00 PM - 5:00 PM",
   },
@@ -31,5 +35,5 @@ const allSlots = [
 
 export default function getSlots() {
   const currentHour = new Date().getHours()
-  return allSlots.filter((slot) => slot.startHour >= currentHour + 2);
+  return allSlots.filter((slot) => slot.startHour >= currentHour + 1);
 }
