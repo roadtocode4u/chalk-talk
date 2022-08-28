@@ -4,10 +4,17 @@ import axios from 'axios';
 import swal from 'sweetalert';
 import TADoubtCard from '../../components/TADoubtCard/TADoubtCard';
 import './Dashboard.css';
+import  ChartDoubts from '../../components/ChartDoubts/ChartDoubts';
 
 function Dashboard() {
-
   const [doubts, setDoubts] = useState([])
+  
+  const [statusCount, setStatusCount] = useState({
+    pending: 0,
+    attended: 0,
+    resolved: 0
+  })
+  
   const [teachingAssistant, setTeachingAssistant] = useState({});
   
   let [searchParams] = useSearchParams();
@@ -38,10 +45,39 @@ function Dashboard() {
       fetchData();
   },[teachingAssistant]);
 
+  useEffect(()=>{
+    let pending = 0;
+    let attended = 0;
+    let resolved = 0;
+
+    doubts.map((doubt) => {
+      if(doubt.status === "pending"){
+        pending++;
+      }
+      else if(doubt.status === "attended"){
+        attended++;
+      }
+      else if(doubt.status === "resolved"){
+        resolved++;
+      }
+    });
+
+    setStatusCount({
+      pending,
+      attended,
+      resolved
+    })
+  }, [doubts]);
+
   return (
     <div className='container'>
       <div className='ta-greeting'>
         <h4>Hello, {teachingAssistant.fullName}. There are {doubts.length} doubts in your dashboard...</h4>
+      </div>
+
+      <div>
+        <ChartDoubts pending={statusCount.pending} 
+        attended={statusCount.attended} resolved={statusCount.resolved}/>
       </div>
       {
         doubts.map((doubt,index)=>{

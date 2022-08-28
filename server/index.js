@@ -1,28 +1,17 @@
-
 const express = require("express");
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require("mongoose");
-const User = require("./models/User");
-const Doubt = require("./models/Doubt");
-const TeachingAssistant = require("./models/TeachingAssistant");
-const { default: axios } = require("axios");
-const { response } = require("express");
 
-const TAEmailMap = {
-  'icp': ['itspinki05@gmail.com', 'prajaktadharpure28@gmail.com'],
-  'c' : ['itspinki05@gmail.com', 'vaishnavihole1@gmail.com'],
-  'cpp' : ['itspinki05@gmail.com','anandshirbhaiyye@gmail.com', 'prajaktadharpure28@gmail.com'],
-  'python': ['sakoretejal1511@gmail.com', 'itspinki05@gmail.com'],
-  "dsa": ['prajaktadharpure28@gmail.com', 'anandshirbhaiyye@gmail.com', 'yashdip123@gmail.com'],
-};
-
-const getTAEmail = (course) => {
-  const TAMailArray = TAEmailMap[course]
-  const randomIndex = Math.floor(Math.random() * TAMailArray.length)
-  return TAMailArray[randomIndex]
-}
+const healthCheck = require("./controllers/health");
+const userPost = require("./controllers/user_post");
+const doubtPost = require("./controllers/doubt_post");
+const doubtGet = require("./controllers/doubt_get");
+const assistantPost = require("./controllers/assistant_post");
+const assistantGet = require("./controllers/assistant_get");
+const updateDoubt = require("./controllers/doubt_update");
+const doubtForTA = require("./controllers/doubtforta_get");
 
 const app = express();
 app.use(bodyParser.json());
@@ -37,280 +26,23 @@ mongoose.connect(
   }
 );
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "All Good 👍",
-  });
-});
+app.get("/health", healthCheck);
 
-app.post("/user", async (req, res) => {
-  const { fullName, email, mobile } = req.body;
+app.post("/user", userPost);
 
-  if (!fullName) {
-    return res.send({
-      success: false,
-      message: "fullName cannot be empty",
-    });
-  }
+app.post("/doubt", doubtPost);
 
-  if (!email) {
-    return res.send({
-      success: false,
-      message: "email cannot be empty",
-    });
-  }
+app.get("/doubts", doubtGet);
 
-  if (!mobile) {
-    return res.send({
-      success: false,
-      message: "mobile cannot be empty",
-    });
-  }
+app.get("/doubtsforta/:email", doubtForTA);
 
-  const user = await User.findOne({
-    email: email,
-  });
+app.post("/assistant", assistantPost);
 
-  if (user) {
-    await User.updateOne(
-      {
-        email: email,
-      },
-      {
-        $set: {
-          fullName: fullName,
-          mobile: mobile,
-        },
-      }
-    );
+app.get("/assistants", assistantGet);
 
-    const updatedUser = await User.findOne({
-      email: email,
-    });
+app.post("/updatedoubt", updateDoubt);
 
-    res.send(updatedUser);
-    return;
-  }
-
-  const newUser = new User({
-    fullName: fullName,
-    email: email,
-    mobile: mobile,
-  });
-
-  const savedUser = await newUser.save();
-
-  res.send(savedUser);
-});
-
-app.post("/doubt", async (req, res) => {
-  const { title, description, courseName, slot, status, email } = req.body;
-
-  const user = await User.findOne({
-    email,
-  });
-  // TODO: if pending doubt is already for user then return pending message
-
-  const pendingDobuts = await Doubt.find({
-    user: user,
-    status: "pending",
-  });
-
-  if (pendingDobuts.length > 0) {
-    return res.json({
-      success: false,
-      data: [],
-      message: "You can ask new dobut once pending dobut is resovled",
-    });
-  }
-
-  const TAEmail = getTAEmail(courseName);
-  const teachingAssistant = await TeachingAssistant.findOne({
-    email: TAEmail,
-  });
-
-  const newDoubt = new Doubt({
-    title,
-    description,
-    courseName,
-    slot,
-    status,
-    user: user,
-    teachingAssistant: teachingAssistant,
-  });
-  // TODO: send notification to slack channel
-
-  const response = await axios.post(
-    "https://slack.com/api/chat.postMessage",
-    {
-      channel: "C03N225P5FX",
-      text: `Hello *${teachingAssistant.fullName}*, New doubt is assigned to you.
-*${user.fullName}* has asked *${title}*. Doubt Session with him is scheduled at *${slot}*.
-please call him now to inform about this session *${user.mobile}*.
-More details are avilable in your dashboard. `,
-    },
-    {
-      headers: {
-        authorization: `Bearer ${process.env.AUTH_TOKEN}`,
-      },
-    }
-  );
-
-  const savedDoubt = await newDoubt.save();
-  res.json({
-    success: true,
-    data: savedDoubt,
-    message: "New doubt is added successfully",
-  });
-});
-
-app.get("/doubts", async (req, res) => {
-  const email = req.query.email;
-  const user = await User.findOne({
-    email: email,
-  });
-
-  if (!user) {
-    return res.send([]);
-  }
-
-  const doubts = await Doubt.aggregate([
-    {
-      $match: {
-        user: user._id,
-      },
-    },
-    {
-      $lookup: {
-        from: "teachingassistants",
-        localField: "teachingAssistant",
-        foreignField: "_id",
-        as: "teachingAssistant",
-      },
-    },
-  ]);
-  res.json(doubts);
-});
-
-app.get("/doubtsforta/:email", async (req, res) => {
-  const { email } = req.params;
-
-  const teachingAssistant = await TeachingAssistant.findOne({
-    email: email,
-  });
-
-  if (!teachingAssistant) {
-    return res.send([]);
-  }
-  const doubtStatuses = ["pending", "attended", "resolved"]
-
-  const doubts = await Doubt.aggregate([
-    {
-      $match: {
-        teachingAssistant: teachingAssistant._id,
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user",
-        foreignField: "_id",
-        as: "user",
-      }
-    },
-    {
-      "$addFields" : {
-         "__order" : { "$indexOfArray" : [ doubtStatuses, "$status" ] }
-        }
-
-    },
-    {
-      $unwind: "$user",
-    },
-    {
-      $sort: {
-        __order: 1,
-      }
-    }
-  ]);
-
-  res.send(doubts);
-});
-
-app.get('/doubtsforta/:email', async (req, res) => {
- const {email}= req.params;
-
- const teachingAssistant = await TeachingAssistant.findOne({
-    email: email
- })
-
-  if(!teachingAssistant) {
-    return res.send([])
-  }
-
-  const doubts = await Doubt.find({
-    teachingAssistant: teachingAssistant
-  })
-  res.send(doubts);
-})
-
-app.post("/assistant", async (req, res) => {
-  const { fullName, email, mobile, token } = req.body
-
-  const newTeachingAssistant = new TeachingAssistant({
-    fullName,
-    email,
-    mobile,
-    token,
-  });
-
-  const savedTeachingAssistant = await newTeachingAssistant.save();
-  res.send(savedTeachingAssistant);
-});
-
-app.get("/assistants", async (req, res) => {
-  const { email, token } = req.query;
-  const teachingAssistant = await TeachingAssistant.findOne({
-    email: email,
-    token: token,
-  });
-  res.send({
-    success: teachingAssistant ? true : false,
-    data: teachingAssistant,
-  });
-});
-
-app.post("/updatedoubt", async (req, res) => {
-  const { doubtId, status } = req.body;
-  const doubt = await Doubt.updateOne(
-    {
-      _id: mongoose.Types.ObjectId(doubtId),
-    },
-    {
-      $set: {
-        status: status,
-      },
-    }
-  );
-  res.send({
-    success: true,
-    message: `Doubt is marked as ${status}`,
-  });
-});
-
-app.get('/assistants', async (req, res) => {
-  const {email, token} = req.query;
-  const teachingAssistant = await TeachingAssistant.findOne({
-    email: email,
-    token: token
-  });
-  res.send({
-    success: teachingAssistant ? true : false,
-    data: teachingAssistant
-  })
-})
-
-if (process.env.NODE_ENV ==='production') {
+if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
   app.get("*", (req, res) => {
