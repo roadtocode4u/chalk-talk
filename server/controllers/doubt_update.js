@@ -1,5 +1,6 @@
 const Doubt = require("./../models/Doubt");
 const mongoose = require("mongoose");
+const axios = require("axios")
 
 const updateDoubt = async (req, res) => {
   const { doubtId, status } = req.body;
