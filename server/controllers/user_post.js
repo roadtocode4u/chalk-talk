@@ -1,4 +1,5 @@
 const User = require("./../models/User");
+const axios = require("axios")
 
 const userPost = async (req, res) => {
   const { fullName, email, mobile } = req.body;
@@ -35,7 +36,7 @@ const userPost = async (req, res) => {
       },
       {
         $set: {
-          fullName: fullName,
+          fullName: fullName, 
           mobile: mobile,
         },
       }

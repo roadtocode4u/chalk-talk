@@ -1,5 +1,6 @@
 const TeachingAssistant = require("./../models/TeachingAssistant");
 
+
 const assistantGet = async (req, res) => {
   const { email, token } = req.query;
   const teachingAssistant = await TeachingAssistant.findOne({
