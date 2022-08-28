@@ -78,7 +78,6 @@ function Home() {
                       value={user.fullName}
                       onChange={(e) => setUser({ ...user, fullName: e.target.value })}
                       required
-                      disabled
                     />
                   </div>
                   <div className="mb-3">
