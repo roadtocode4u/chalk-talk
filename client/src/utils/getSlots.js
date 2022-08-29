@@ -34,6 +34,14 @@ const allSlots = [
   {
     startHour: 20,
     title: "8:00 PM - 9:00 PM",
+  },
+  {
+    startHour: 21,
+    title: "9:00 PM - 10:00 PM",
+  },
+  {
+    startHour: 22,
+    title: "10:00 PM - 11:00 PM",
   }
 ];
 
